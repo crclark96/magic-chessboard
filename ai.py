@@ -13,24 +13,26 @@ def user_move(board):
 
 def ai_move(board, engine):
     engine.position(board)
-    board.push(engine.go(movetime=2000).bestmove)
+    move = engine.go(movetime=2000).bestmove
+    print(move.uci())
+    board.push(move)
     return board
 
 def main():
     board = chess.Board()
     engine = chess.uci.popen_engine("stockfish-9-linux/Linux/stockfish-9-64")
     engine.uci()
-    print(board)
+    print(board.unicode())
     while board.legal_moves:
         board = user_move(board)
         print("===============")
-        print(board)
+        print(board.unicode())
         if not board.legal_moves:
             print("you win!")
             sys.exit()
         board = ai_move(board,engine)
         print("===============")
-        print(board)
+        print(board.unicode())
     print("you lose :(")
     sys.exit()
 
