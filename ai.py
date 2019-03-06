@@ -2,6 +2,26 @@ import chess
 import chess.uci
 import sys
 
+def uci_to_index(s):
+    '''
+    translates a uci move into a board-index pair (src, dst), with 0 as
+    the bottom left square of the board (from the perspective of
+    white) and 63 as the top right
+    '''
+    cols = '12345678'
+    rows = 'abcdefgh'
+    indexes = [0,0]
+    src = s[0:2]
+    dst = s[2:4]
+    if src[0] not in rows or src[1] not in cols\
+        or dst[0] not in rows or src[1] not in cols:
+        return 0
+    indexes[0] = (int(src[1]) - 1)*8 + (ord(src[0]) - ord('a'))
+    indexes[1] = (int(dst[1]) - 1)*8 + (ord(dst[0]) - ord('a'))
+
+    return tuple(indexes)
+
+
 def user_move(board):
     print(board.legal_moves)
     move = input("=> ")
@@ -15,6 +35,7 @@ def ai_move(board, engine):
     engine.position(board)
     move = engine.go(movetime=2000).bestmove
     print(move.uci())
+    print(uci_to_index(move.uci()))
     board.push(move)
     return board
 
