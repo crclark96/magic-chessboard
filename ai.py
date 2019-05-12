@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 import chess
 import chess.uci
 import sys
@@ -24,10 +27,10 @@ def uci_to_index(s):
 
 def user_move(board):
     print(board.legal_moves)
-    move = input("=> ")
+    move = raw_input("=> ")
     while board.parse_san(move) not in board.legal_moves:
         print("illegal move")
-        move = input("=> ")
+        move = raw_input("=> ")
     board.push_san(move)
     return board
 
@@ -43,17 +46,17 @@ def main():
     board = chess.Board()
     engine = chess.uci.popen_engine("stockfish-9-linux/Linux/stockfish-9-64")
     engine.uci()
-    print(board.unicode())
+    print(board.unicode().encode('utf-8'))
     while board.legal_moves:
         board = user_move(board)
         print("===============")
-        print(board.unicode())
+        print(board.unicode().encode('utf-8'))
         if not board.legal_moves:
             print("you win!")
             sys.exit()
         board = ai_move(board,engine)
         print("===============")
-        print(board.unicode())
+        print(board.unicode().encode('utf-8'))
     print("you lose :(")
     sys.exit()
 

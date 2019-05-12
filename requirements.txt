@@ -1,2 +1,2 @@
-python-chess
+python-chess==0.23
 
