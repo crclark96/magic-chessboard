@@ -18,11 +18,11 @@ end_board = [
   1,1,1,1,1,1,1,1 # this is the top row
 ]
 
-def print_board(board):
-  for i in range(8)[::-1]:
-    for j in range(8):
-      print(board[i*8+j], end=' ')
-    print()
+#def print_board(board):
+#  for i in range(8)[::-1]:
+#    for j in range(8):
+#      print(board[i*8+j], end=' ')
+#    print()
 
 def gen_binary_board(board):
   '''

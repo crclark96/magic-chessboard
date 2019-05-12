@@ -4,6 +4,12 @@
 import chess
 import chess.uci
 import sys
+import smbus
+import time
+import move_detect
+
+address = 0x04
+bus = smbus.SMBus(1)
 
 def uci_to_index(s):
     '''
@@ -27,10 +33,15 @@ def uci_to_index(s):
 
 def user_move(board):
     print(board.legal_moves)
-    move = raw_input("=> ")
-    while board.parse_san(move) not in board.legal_moves:
-        print("illegal move")
-        move = raw_input("=> ")
+    #move = raw_input("=> ")
+    new_board = []
+    for i in range(64):
+      new_board.append(bus.read_byte(address))
+      time.sleep(0.1)
+    move = move_detect.move_detect(board, new_board)
+    #while board.parse_san(move) not in board.legal_moves:
+    #    print("illegal move")
+    #    move = raw_input("=> ")
     board.push_san(move)
     return board
 
@@ -38,7 +49,8 @@ def ai_move(board, engine):
     engine.position(board)
     move = engine.go(movetime=2000).bestmove
     print(move.uci())
-    print(uci_to_index(move.uci()))
+    print("sending to arduino: " + str(uci_to_index(move.uci())))
+    bus.write_i2c_block_data(address,0,list(uci_to_index(move.uci())))
     board.push(move)
     return board
 
