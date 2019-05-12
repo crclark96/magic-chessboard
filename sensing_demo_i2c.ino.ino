@@ -2,7 +2,7 @@
 
 #define SLAVE_ADDRESS 0x04
 
-bool flag = true;
+int flag = 0;
 
 int start1_pin = 5;
 int finish1_pin = 6;
@@ -14,7 +14,7 @@ int finish2_pin = 8;
 int start2_ind = 10;
 int finish2_ind = 18;
 
-byte board[] = {1, 1, 1, 1, 1, 1, 1, 1,
+int board[] = {1, 1, 1, 1, 1, 1, 1, 1,
                1, 1, 1, 1, 1, 1, 1, 1, 
                0, 0, 0, 0, 0, 0, 0, 0,
                0, 0, 0, 0, 0, 0, 0, 0,
@@ -25,6 +25,19 @@ byte board[] = {1, 1, 1, 1, 1, 1, 1, 1,
 
 int number = 0;
 int state = 0;
+
+typedef struct{
+  int start;
+  int finish;
+} tuple;
+
+//Delete after BS
+tuple moves[] = {
+    {11, 19},
+    {2, 38}
+};
+
+int turn = 0;
 
 void setup() {
   pinMode(13, OUTPUT);
@@ -43,6 +56,16 @@ void loop() {
   delay(100);
 }
 
+void printBoard(){
+  for(int i = 0; i < 64; i++){
+    if ((i!=0) && (i%8 == 0)){
+      Serial.print("\n");
+    }
+    Serial.print(board[i]);
+  }
+  Serial.println();
+}
+
 // callback for received data
 void receiveData(int byteCount){
   int counter = 0;
@@ -50,9 +73,6 @@ void receiveData(int byteCount){
   int finish_index = 0;
   while(Wire.available()) {
     number = Wire.read();
-    Serial.print("data received: ");
-    Serial.println(number);
-
     if (counter == 1){
       start_index = number;
     }else if (counter == 2){
@@ -60,29 +80,37 @@ void receiveData(int byteCount){
     }
     counter++;
   }
-
-  //Call motors
+  if (counter > 1){
+    Serial.print("RECEIVED: start ");
+    Serial.print(start_index);
+    Serial.print(" finish ");
+    Serial.println(finish_index);
+    board[start_index] = 0;
+    board[finish_index] = 1;
+  
+    //Call motors
+  
+    Serial.println("RECEIVE");
+    printBoard();
+  }
 }
 
 // callback for sending data
 void sendData(){
-
-  board[start1_ind] = (byte)(digitalRead(start1_pin)+1)%2;
-  board[finish1_ind] = (byte)(digitalRead(finish1_pin)+1)%2;
-
-  board[start2_ind] = (byte)(digitalRead(start2_pin)+1)%2;
-  board[finish2_ind] = (byte)(digitalRead(finish2_pin)+1)%2;
-
+ Wire.write(1);
+ flag = (flag+1)%64;
+  
+  //board[start1_ind] = (byte)(digitalRead(start1_pin)+1)%2;
+  //board[finish1_ind] = (byte)(digitalRead(finish1_pin)+1)%2;
+  
+  //board[start2_ind] = (byte)(digitalRead(start2_pin)+1)%2;
+  //board[finish2_ind] = (byte)(digitalRead(finish2_pin)+1)%2;
  
- if (flag){
-   for(int i = 0; i < 32; i++){
-    Wire.write(board[i]);
-   }
- }else{
-   for(int i = 32; i < 64; i++){
-    Wire.write(board[i]);
-   }
- }
+ //board[moves[turn].start] = 0;
+ //board[moves[turn].finish] = 1;
+  
+ //turn++;
 
- flag = !flag;
+ Serial.println("SEND");
+ printBoard();
 }
