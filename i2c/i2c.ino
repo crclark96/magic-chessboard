@@ -7,13 +7,27 @@ int state = 0;
 int flag = 0;
 
 int board[] = {1, 1, 1, 1, 1, 1, 1, 1,
-               1, 1, 1, 0, 1, 1, 1, 1, 
+               1, 1, 1, 1, 1, 1, 1, 1, 
                0, 0, 0, 0, 0, 0, 0, 0,
-               0, 0, 0, 1, 0, 0, 0, 0,
+               0, 0, 0, 0, 0, 0, 0, 0,
                0, 0, 0, 0, 0, 0, 0, 0, 
                0, 0, 0, 0, 0, 0, 0, 0,
                1, 1, 1, 1, 1, 1, 1, 1,
                1, 1, 1, 1, 1, 1, 1, 1};
+struct tuple{
+  int start;
+  int finish;
+};
+
+typedef struct tuple Tuple;
+
+Tuple moves[] = {
+  {12, 28},
+  {5, 26},
+  {1, 16},
+  {15, 23}  
+};
+int turn = 0;
 
 void setup() {
   pinMode(13, OUTPUT);
@@ -30,6 +44,15 @@ void setup() {
 
 void loop() {
   delay(100);
+}
+
+void printBoard(){
+  for(int i = 56; i >= 0; i-=8){
+    for(int j = 0; j < 8; j++){
+      Serial.print(board[i+j]);
+    }
+    Serial.println();
+  }
 }
 
 // callback for received data
@@ -54,16 +77,19 @@ void receiveData(int byteCount){
   Serial.print(" ");
   Serial.println(finish_index);
 
-  //Call motors
-
   board[start_index] = 0;
   board[finish_index] = 1;
 }
 
 // callback for sending data
-void sendData(){
-  Serial.print("SEND: ");
-  Serial.println(board[flag]);
+void sendData(){  
+  if (flag == 0){
+    printBoard();
+    board[moves[turn].start] = 0;    
+    board[moves[turn].finish] = 1;
+    turn++;    
+    printBoard();
+  } 
   Wire.write(board[flag]);
   flag = (flag+1)%64;
 }
