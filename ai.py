@@ -39,10 +39,11 @@ def user_move(board):
       new_board.append(bus.read_byte(address))
       time.sleep(0.1)
     move = move_detect.move_detect(board, new_board)
+    print("received from arduino: " + str(move))
     #while board.parse_san(move) not in board.legal_moves:
     #    print("illegal move")
     #    move = raw_input("=> ")
-    board.push_san(move)
+    board.push_uci(move)
     return board
 
 def ai_move(board, engine):
