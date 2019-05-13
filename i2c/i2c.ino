@@ -43,7 +43,7 @@ void setup() {
 }
 
 void loop() {
-  delay(100);
+  delay(50);
 }
 
 void printBoard(){
@@ -83,13 +83,18 @@ void receiveData(int byteCount){
 
 // callback for sending data
 void sendData(){  
+
   if (flag == 0){
-    printBoard();
+    //printBoard();
     board[moves[turn].start] = 0;    
     board[moves[turn].finish] = 1;
+    Serial.print("moving from: ");
+    Serial.print(moves[turn].start);
+    Serial.print(" to: ");
+    Serial.println(moves[turn].finish);
     turn++;    
-    printBoard();
   } 
+  
   Wire.write(board[flag]);
   flag = (flag+1)%64;
 }
