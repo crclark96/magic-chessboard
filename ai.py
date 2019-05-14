@@ -33,7 +33,7 @@ def uci_to_index(s):
 
 def user_move(board):
     print(board.legal_moves)
-    #move = raw_input("=> ")
+    raw_input("=> ")
     new_board = []
     for i in range(64):
       new_board.append(bus.read_byte(address))
